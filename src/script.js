@@ -29,6 +29,9 @@ scene.add(axesHelper);
  */
 const textureLoader = new THREE.TextureLoader();
 
+const matcapTexture = textureLoader.load("/textures/matcaps/1.png");
+matcapTexture.colorSpace = THREE.SRGBColorSpace;
+
 /**************
  * Fonts
  */
@@ -52,11 +55,33 @@ fontLoader.load("/fonts/helvetiker_regular.typeface.json", (font) => {
   textGeometry.center();
   /*** */
 
-  const textMaterial = new THREE.MeshBasicMaterial();
-  textMaterial.wireframe = true;
-  const text = new THREE.Mesh(textGeometry, textMaterial);
+  const material = new THREE.MeshMatcapMaterial({matcap: matcapTexture});
+  const text = new THREE.Mesh(textGeometry, material);
   scene.add(text);
+
+  //donoute objects
+  const donoutGeo = new THREE.TorusGeometry(0.3, 0.2, 20, 45);
+  
+  console.time('donouts') //**per avare il tempo di creazione, line 83 */
+  for (let i = 0; i < 100; i++) {
+    //ATENZIONE: creare geometry e material fuori loop aumenta l'ottimizazione
+    
+    const donout = new THREE.Mesh(donoutGeo, material);
+
+    donout.position.x = (Math.random() - 0.5) * 10;
+    donout.position.y = (Math.random() - 0.5) * 10;
+    donout.position.z = (Math.random() - 0.5) * 10;
+
+    donout.rotation.x = Math.random() * Math.PI;
+    donout.rotation.y = Math.random() * Math.PI;
+
+    const scale = Math.random();
+    donout.scale.set(scale, scale, scale)
+    scene.add(donout);
+  }
+console.timeEnd('donouts')/**per avere il tempo di creazione, line 67 */
 });
+
 /*******************
 /**
  * Object
